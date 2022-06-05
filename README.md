@@ -1,154 +1,191 @@
+
 # DNS Simulator
+
+  
 
 In this guide, we’ll learn the basic things needed in order to use “DNS-FullProtocolSimulator”.
 
+  
+
 “DNS-FullProtocolSimulator” is a testing environment which simulates all parts of any open-source DNS implementation and allows researchers to debug and test the protocol from end to end.
+
+  
 
 “DNS-FullProtocolSimulator” was created by me, **Shani Stajnrod**, as part of my thesis research. Feel free to contact me for any help via [shaaniba93@gmail.com](mailto:shaaniba93@gmail.com).
 
-# Docker Usage
+  
+
+## Docker Usage
+
 If you are unfamiliar with Docker I suggest to first read about Docker here: [https://docs.docker.com/get-started/](https://docs.docker.com/get-started/)
 
-1. Download the docker from Docker Hub `docker pull shanist/dnssim:latest`
-2. Run the docker interactively so you can control the environment `docker container run –dns 127.0.0.1 -it dnssim /bin/bash` (It is important to use –dns 127.0.0.1 flag so the environment DNS will be local. **Changing resolv.conf inside a Docker won’t work**)
-3. Now you will have a terminal inside the environment.
-4. In order to open another terminal for the environment first run `docker container ls`, look for “dnssim” docker name and copy the Docker ID
-![alt text](https://github.com/ShaniBenAtya/dnssim/blob/master/images/dockercontainerls.png)
-Run `docker exec -it <CONTAINER_ID> bash`
+  
 
+1. Download the docker from Docker Hub `docker pull shanist/dnssim:latest`
+
+2. Run the docker interactively so you can control the environment `docker container run –dns 127.0.0.1 -it dnssim /bin/bash` (It is important to use –dns 127.0.0.1 flag so the environment DNS will be local. **Changing resolv.conf inside a Docker won’t work**)
+
+3. Now you will have a terminal inside the environment.
+
+4. In order to open another terminal for the environment first run `docker container ls`, look for “dnssim” docker name and copy the Docker ID ![alt text](https://github.com/ShaniBenAtya/dnssim/blob/master/images/dockercontainerls.png) Run `docker exec -it <CONTAINER_ID> bash`
 5. To open more terminals into the environment, repeat step 4
 
-## Create files and folders
+**Remember to run `resolver` and `authoritative` you must open more than one terminal for you environment**
 
-The file explorer is accessible using the button in left corner of the navigation bar. You can create a new file by clicking the **New file** button in the file explorer. You can also create folders by clicking the **New folder** button.
+## Getting to know the environment
+“DNS-FullProtocolSimulator”, like the DNS protocol, has three main parts: Client, Resolver (which is currently an implementation of bind9) and a chain of authoritative servers (currently including root server and TLD which are implemented with NSD).
 
-## Switch to another file
+### Resolver
 
-All your files and folders are presented as a tree in the file explorer. You can switch from one to another by clicking a file in the tree.
+To use the DNS protocol in a closed testing environment, I changed Bind9 implementation and directed it to use my root as the default and only root server. This is done by changing the following the `root_ns[]` list in `rootns.c` file.
 
-## Rename a file
+Also, in order to follow the code conveniently via debugging, code optimization was disabled in the compiler and the number of threads was limited. This was done by changing the `main.c` number of CPU’s as follows:
 
-You can rename the current file by clicking the file name in the navigation bar or by clicking the **Rename** button in the file explorer.
+-   `result = isc_taskmgr_create(named_g_mctx, `**`named_g_cpus`**`, 0, named_g_nm, &named_g_taskmgr);`
+    
 
-## Delete a file
+Was changed to:
 
-You can delete the current file by clicking the **Remove** button in the file explorer. The file will be moved into the **Trash** folder and automatically deleted after 7 days of inactivity.
+-   `result = isc_taskmgr_create(named_g_mctx, `**`1`**`, 0, named_g_nm, &named_g_taskmgr);`
+    
 
-## Export a file
+### Authoritative servers
 
-You can export the current file by clicking **Export to disk** in the menu. You can choose to export the file as plain Markdown, as HTML using a Handlebars template or as a PDF.
+Our authoritative servers are implemented using NSD.
+
+Currently, we have two authoritative servers in the environment: root server and a TLD which zone is “home.lan”. In the next chapter, we’ll discuss how to configure them.
+
+## Configuration –
+
+**Environment IP address:**
+
+-   `127.0.0.1` – Client
+    
+-   `127.0.0.1` – Our own Resolver (Yeah, they have the same IP but that’s ok)
+    
+-   `127.0.0.2` – Root authoritative
+    
+-   `127.0.0.200` – “home.lan” TLD authoritative
+    
+-   `127.0.0.53` – The default resolver – **DO NOT USE IT WHILE TESTING**
+    
+
+**Authoritative Servers:**
+
+Our authoritative servers are located at `/env/nsd_root` and `/env/nsd_attack`. To use them, you’ll first want to configure their zone files which are located inside their folder and called `“ZONE_NAME.forword”`. You can add any configuration you want to the zone file and restart it to apply the changes.
+
+**Resolver:**
+
+First, go to the resolver implementation folder (We have both `Bind-9.16.6` (Which is non-vulnerable to NXNS).
+You can easily replace the `Bind9` version by going to `/env/bind9` and use `git checkout` for a different branch. (e.g. bind-9.16.2, Which is vulnerable to NXNS) 
+
+>**NOTE:** The environment is pre-installed with `Bind 9.16.6` so you can skip the next step if you don't want a different verion.
+
+Now, while inside Bind9 folder follow run the following commands:
+
+1. `./configure`
+2. `make -j4`
+3. `make install`
+    
+
+> **NOTE:** In order to change resolv.conf (Default resolver of the environment) look at “Docker Usage” step 2.
+
+## Turning on all parts of the environment
+
+Starting the environment is done by:
+
+[Open three terminal in the Docker](#docker-usage)
+
+-   First, turn on the Resolver:
+    
+    -   `cd /etc` **(IMPORTANT!!)**
+        
+    -  `named -g -c /etc/named.conf`
+        
+    -   If there is a key-error run `rndc-confgen -a` and try to start it again
+        
+    -   If you’re getting the following error: `“loading configuration: Permission denied”`, use the following fix:
+        
+        -   `chmod 777 /usr/local/etc/rndc.key`
+            
+        -   `chmod 777 /usr/local/etc/bind.keys`
+            
+-   Now, turn on the Authoritative servers in a different environment terminal:
+    
+    -   Navigate to the Authoritative server folder (`/env/nsd_attack` and `/env/nsd_root`), then run: `nsd -c nsd.conf -d -f nsd.db`
+        
+    -   If there is an error stating that the port is already in use, run - `service nsd stop` and try to start it again
+        
+
+> **YAY! YOU ARE READY TO START TESTING!!!**
+
+## Useful commands –
+
+-   Bind’s configuration file - `/etc/named.conf`
+    
+-   Cache –
+    
+    -   To flush the cache(The resolver should be up) –
+        
+        -   `rndc flush`
+            
+        -   `rndc reload`
+            
+    -   To show the current cache –
+        
+        -   `rndc dumpdb -cache`
+            
+        -   cached DB location: `/etc/bind/named_dump.db`
+            
+
+## Useful tools in the environment for you to use –
+
+“DNS-FullProtocolSimulator” already has the following useful testing tools:
+
+-   Wireshark
+	- `docker exec -ti <container id> cat /sys/class/net/eth0/iflink`
+	- `ip link | grep <output from previous command>`
+	- `<output from first command>`: `<name of the interface>`
+	- you can also use the following tutorial: https://github.com/nicolaka/netshoot
+
+-   Resperf:
+    
+    -   Send queries to the resolver in order to calculate the server maximum throughput and its latency
+        
+        -   `resperf -d INPUT_FILE -s 127.0.0.1 -v`
+            
+    -   In order to use resperf with constant range of queries per second:
+        
+        -   `Resperf-report -d INPUT_FILE -s SERVER_IP -v -m 500 -c 60 -r 0`
+            
+        -   Where: `-m` is the number of QPS that will be sent, `-c` is the time in which resperf will try to send the queries, and `-r` is the time resperf will have an ramp-up phase before sending the packets in a constant time, we’ll want the ramp-up to be zero.
+            
+-   Valgrind and kcachegrind:
+    
+    -   Turn on the resolver with the valgrind tool:
+        
+        -   `valgrind --tool=callgrind named -g -c /etc/named.conf`
+            
+    -   After finishing the test, open the file in kcachegrind:
+        
+        -   `kcachegrind OUTPUT_FILE`
+            
+-   psrecord: `psrecord <pid of bind9> --interval 1 --plot OUTPUT_FILE.png`
+	- > **NOTE:** to find Bind9 PID use `ps aux | grep named`
+
+## License
+
+Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 
-# Synchronization
+## Contact
 
-Synchronization is one of the biggest features of StackEdit. It enables you to synchronize any file in your workspace with other files stored in your **Google Drive**, your **Dropbox** and your **GitHub** accounts. This allows you to keep writing on other devices, collaborate with people you share the file with, integrate easily into your workflow... The synchronization mechanism takes place every minute in the background, downloading, merging, and uploading file modifications.
+<!-- Shan - [@your_twitter](https://twitter.com/your_username) - email@example.com -->
 
-There are two types of synchronization and they can complement each other:
-
-- The workspace synchronization will sync all your files, folders and settings automatically. This will allow you to fetch your workspace on any other device.
-	> To start syncing your workspace, just sign in with Google in the menu.
-
-- The file synchronization will keep one file of the workspace synced with one or multiple files in **Google Drive**, **Dropbox** or **GitHub**.
-	> Before starting to sync files, you must link an account in the **Synchronize** sub-menu.
-
-## Open a file
-
-You can open a file from **Google Drive**, **Dropbox** or **GitHub** by opening the **Synchronize** sub-menu and clicking **Open from**. Once opened in the workspace, any modification in the file will be automatically synced.
-
-## Save a file
-
-You can save any file of the workspace to **Google Drive**, **Dropbox** or **GitHub** by opening the **Synchronize** sub-menu and clicking **Save on**. Even if a file in the workspace is already synced, you can save it to another location. StackEdit can sync one file with multiple locations and accounts.
-
-## Synchronize a file
-
-Once your file is linked to a synchronized location, StackEdit will periodically synchronize it by downloading/uploading any modification. A merge will be performed if necessary and conflicts will be resolved.
-
-If you just have modified your file and you want to force syncing, click the **Synchronize now** button in the navigation bar.
-
-> **Note:** The **Synchronize now** button is disabled if you have no file to synchronize.
-
-## Manage file synchronization
-
-Since one file can be synced with multiple locations, you can list and manage synchronized locations by clicking **File synchronization** in the **Synchronize** sub-menu. This allows you to list and remove synchronized locations that are linked to your file.
+DNS Simulator: [https://github.com/ShaniBenAtya/dnssim](https://github.com/ShaniBenAtya/dnssim)
 
 
-# Publication
 
-Publishing in StackEdit makes it simple for you to publish online your files. Once you're happy with a file, you can publish it to different hosting platforms like **Blogger**, **Dropbox**, **Gist**, **GitHub**, **Google Drive**, **WordPress** and **Zendesk**. With [Handlebars templates](http://handlebarsjs.com/), you have full control over what you export.
+<!-- ACKNOWLEDGMENTS -->
+## Acknowledgments
 
-> Before starting to publish, you must link an account in the **Publish** sub-menu.
-
-## Publish a File
-
-You can publish your file by opening the **Publish** sub-menu and by clicking **Publish to**. For some locations, you can choose between the following formats:
-
-- Markdown: publish the Markdown text on a website that can interpret it (**GitHub** for instance),
-- HTML: publish the file converted to HTML via a Handlebars template (on a blog for example).
-
-## Update a publication
-
-After publishing, StackEdit keeps your file linked to that publication which makes it easy for you to re-publish it. Once you have modified your file and you want to update your publication, click on the **Publish now** button in the navigation bar.
-
-> **Note:** The **Publish now** button is disabled if your file has not been published yet.
-
-## Manage file publication
-
-Since one file can be published to multiple locations, you can list and manage publish locations by clicking **File publication** in the **Publish** sub-menu. This allows you to list and remove publication locations that are linked to your file.
-
-
-# Markdown extensions
-
-StackEdit extends the standard Markdown syntax by adding extra **Markdown extensions**, providing you with some nice features.
-
-> **ProTip:** You can disable any **Markdown extension** in the **File properties** dialog.
-
-
-## SmartyPants
-
-SmartyPants converts ASCII punctuation characters into "smart" typographic punctuation HTML entities. For example:
-
-|                |ASCII                          |HTML                         |
-|----------------|-------------------------------|-----------------------------|
-|Single backticks|`'Isn't this fun?'`            |'Isn't this fun?'            |
-|Quotes          |`"Isn't this fun?"`            |"Isn't this fun?"            |
-|Dashes          |`-- is en-dash, --- is em-dash`|-- is en-dash, --- is em-dash|
-
-
-## KaTeX
-
-You can render LaTeX mathematical expressions using [KaTeX](https://khan.github.io/KaTeX/):
-
-The *Gamma function* satisfying $\Gamma(n) = (n-1)!\quad\forall n\in\mathbb N$ is via the Euler integral
-
-$$
-\Gamma(z) = \int_0^\infty t^{z-1}e^{-t}dt\,.
-$$
-
-> You can find more information about **LaTeX** mathematical expressions [here](http://meta.math.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference).
-
-
-## UML diagrams
-
-You can render UML diagrams using [Mermaid](https://mermaidjs.github.io/). For example, this will produce a sequence diagram:
-
-```mermaid
-sequenceDiagram
-Alice ->> Bob: Hello Bob, how are you?
-Bob-->>John: How about you John?
-Bob--x Alice: I am good thanks!
-Bob-x John: I am good thanks!
-Note right of John: Bob thinks a long<br/>long time, so long<br/>that the text does<br/>not fit on a row.
-
-Bob-->Alice: Checking with John...
-Alice->John: Yes... John, how are you?
-```
-
-And this will produce a flow chart:
-
-```mermaid
-graph LR
-A[Square Rect] -- Link text --> B((Circle))
-A --> C(Round Rect)
-B --> D{Rhombus}
-C --> D
-```
