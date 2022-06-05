@@ -83,7 +83,8 @@ You can easily replace the `Bind9` version by going to `/env/bind9` and use `git
 
 Now, while inside Bind9 folder follow run the following commands:
 
-1. `./configure`
+1. `autoreconf -fi`
+2. `./configure`
 2. `make -j4`
 3. `make install`
     
