@@ -5,4 +5,4 @@
 [submodule "nsd"]
 	path = nsd
 	url = git@github.com:ShaniBenAtya/nsd.git
-	branch = NSD_4_3_3_REL
+	tag = NSD_4_3_3_REL

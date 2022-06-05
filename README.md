@@ -23,7 +23,7 @@ If you are unfamiliar with Docker I suggest to first read about Docker here: [ht
 
 1. Download the docker from Docker Hub `docker pull shanist/dnssim:latest`
 
-2. Run the docker interactively so you can control the environment `docker container run –dns 127.0.0.1 -it dnssim /bin/bash` (It is important to use –dns 127.0.0.1 flag so the environment DNS will be local. **Changing resolv.conf inside a Docker won’t work**)
+2. Run the docker interactively so you can control the environment `docker container run --dns 127.0.0.1 -it dnssim /bin/bash` (It is important to use –dns 127.0.0.1 flag so the environment DNS will be local. **Changing resolv.conf inside a Docker won’t work**)
 
 3. Now you will have a terminal inside the environment.
 
@@ -83,8 +83,8 @@ You can easily replace the `Bind9` version by going to `/env/bind9` and use `git
 
 Now, while inside Bind9 folder follow run the following commands:
 
-1. `autoreconf -fi`
-2. `./configure`
+<! -- 1. `autoreconf -fi` -->
+1. `./configure`
 2. `make -j4`
 3. `make install`
     
