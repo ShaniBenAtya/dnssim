@@ -1,0 +1,14 @@
+$ORIGIN myhome.lan.    ; next zone origin
+$TTL 86400           ; default time to live
+
+@ IN SOA ns1.home.lan. admin.home.lan. (
+           3311010298  ; serial number
+           28800       ; Refresh
+           7200        ; Retry
+           864000      ; Expire
+           86400       ; Min TTL
+           )
+
+attack.home.lan     IN     A   1.1.1.123
+
+;*.myhome.lan         IN     CNAME    attack.myhome.lan.

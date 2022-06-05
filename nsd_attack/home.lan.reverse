@@ -1,0 +1,26 @@
+;## NSD authoritative only DNS
+;## home.lan.zone .:. https://calomel.org
+;## REVERSE Zone - home.lan.reverse
+
+$ORIGIN home.lan.  ; default zone domain
+$TTL 86400         ; default time to live
+
+0.0.127.in-addr.arpa. IN SOA ns1.home.lan. admin.home.lan. (
+           3311010299  ; serial number
+           28800       ; Refresh
+           7200        ; Retry
+           864000      ; Expire
+           86400       ; Min TTL
+           )
+
+207.0.0.127.in-addr.arpa.   IN PTR firewall
+208.0.0.127.in-addr.arpa.   IN PTR laptop
+203.0.0.127.in-addr.arpa.   IN PTR xbox360
+204.0.0.127.in-addr.arpa.   IN PTR ps3
+205.0.0.127.in-addr.arpa.   IN PTR dhcp5
+206.0.0.127.in-addr.arpa.   IN PTR mail
+202.0.0.127.in-addr.arpa. IN PTR ns1
+
+;## NSD authoritative only DNS
+;## home.lan.zone .:. https://calomel.org
+;## REVERSE Zone - home.lan.reverse

@@ -1,0 +1,17 @@
+$ORIGIN shani.    ; default zone domain
+$TTL 86400           ; default time to live
+
+@ IN SOA shani. admin.shani. (
+           1111010200  ; serial number
+           28800       ; Refresh
+           7200        ; Retry
+           864000      ; Expire
+           86400       ; Min TTL
+           )
+
+           NS      ns1.shani.
+           MX      10 mail.shani.
+
+ns1       IN     A 127.0.0.100
+fake1     IN     A 127.0.0.242
+*         IN     A 127.0.0.100

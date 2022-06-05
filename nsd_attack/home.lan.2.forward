@@ -1,0 +1,24 @@
+;## NSD authoritative only DNS
+;## home.lan.zone .:. https://calomel.org
+;## FORWARD Zone -  home.lan.forward
+
+$ORIGIN home.lan.    ; default zone domain
+$TTL 86400           ; default time to live
+
+@ IN SOA ns1.home.lan. admin.home.lan. (
+           3311010299  ; serial number
+           28800       ; Refresh
+           7200        ; Retry
+           864000      ; Expire
+           86400       ; Min TTL
+           )
+
+           NS      ns1.home.lan.
+           NS      ns2.home.lan.
+           MX      10 mail.home.lan.
+
+home.lan.   IN     DNAME myhome.lan.
+
+;## NSD authoritative only DNS
+;## home.lan.zone .:. https://calomel.org
+;## FORWARD Zone - home.lan.FORWARD

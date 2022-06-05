@@ -1,0 +1,52 @@
+
+. IN SOA root-servers.net. a.root-servers.net. (
+           2011010203  ; serial number
+           28800       ; Refresh
+           7200        ; Retry
+           864000      ; Expire
+           86400       ; Min TTL
+           )
+
+; ####     NS      root-servers.net.
+; ####     MX      10 root-servers.net.
+
+firewall   IN     A    127.0.0.7
+firewall   IN     TXT  "Testing...1...2...3"
+guest      CNAME       dhcp520
+mail       CNAME       root-servers.net.
+; ### root-servers.net. A    127.0.0.2
+
+home.lan.	172800	IN	NS	ns1.home.lan.
+ns1.home.lan.	172800	IN	A	127.0.0.200	
+;## ns2.home.lan.	172800	IN	A	127.0.0.201
+
+.		   IN	NS	a.root-servers.net.
+; #### .		   IN	NS	b.root-servers.net.
+
+a.root-servers.net.	IN	A	127.0.0.2
+; #### b.root-servers.net.	IN	A	127.0.0.4
+
+;#### example.net.            IN  A   127.0.0.83 #####
+
+; #### Cycle test #######
+; #### example.com     IN     NS ns1.example.com
+; #### ns1.example.com IN     A 127.0.0.238
+; #### example.org     IN     NS ns1.example.org
+; #### ns1.example.org IN     A 127.0.0.245
+
+; #### Cycle test end #######
+
+; #### NX-Redirection test started #######
+
+; #### *				  CNAME *.example.net 
+; #### example.net.      IN NS test.fake 
+
+; ### fake11              IN NS attack.home.lan
+
+; #### NX-Redirection test ended   #######
+
+*          IN     A    127.0.0.89
+
+;## NSD authoritative only DNS
+;## .lan.zone .:. https://calomel.org
+;## FORWARD Zone - .lan.FORWARD
