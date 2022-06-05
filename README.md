@@ -184,7 +184,13 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 DNS Simulator: [https://github.com/ShaniBenAtya/dnssim](https://github.com/ShaniBenAtya/dnssim)
 
+## Contribution
+Bug reports and pull requests are welcome on GitHub at https://github.com/ShaniBenAtya/dnssim. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the Contributor Covenant code of conduct.
 
+### Building the Docker
+`docker build -t dnssim .`
+
+> **NOTE:** make sure the submodules have been downloaded (Check that bind9 and nsd folder aren't empty), if they are, run `git submodule update --init`
 
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
