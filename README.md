@@ -20,6 +20,7 @@ If the code or data help you, please cite the following paper:
 @inproceedings{NRDelegationAttack,
   title={QuoteR: NRDelegationAttack: Complexity DDoS attack on DNS Recursive Resolvers},
   author={Qi, Yehuda Afek, Anat Bremler-Barr and Shani Stajnrod},
+  howpublished ={USENIX Security 23 conference},
   year={2023}
 }
 
