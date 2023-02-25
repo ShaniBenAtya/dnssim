@@ -40,7 +40,7 @@ If you are unfamiliar with Docker I suggest to first read about Docker here: [ht
 4. In order to open another terminal for the environment first run `docker container ls`, look for “dnssim” docker name and copy the Docker ID ![alt text](https://github.com/ShaniBenAtya/dnssim/blob/master/images/dockercontainerls.png) Run `docker exec -it <CONTAINER_ID> bash`
 5. To open more terminals into the environment, repeat step 4
 
-**Remember, in ordeer to run `resolver` and `authoritative` you must open more than one terminal for you environment**
+**Remember, in order to run `resolver` and `authoritative` you must open more than one terminal for you environment**
 
 ## Getting to know the environment
 “DNS-FullProtocolSimulator”, like the DNS protocol, has three main parts: Client, Resolver (which is currently an implementation of bind9) and a chain of authoritative servers (currently including root server and TLD which are implemented with NSD).
