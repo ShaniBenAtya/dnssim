@@ -13,6 +13,13 @@ In this guide, we’ll learn the basic things needed in order to use “DNS-Full
 
 “DNS-FullProtocolSimulator” was created by me, **Shani Stajnrod**, as part of my thesis research. Feel free to contact me for any help via [shaaniba93@gmail.com](mailto:shaaniba93@gmail.com).
 
+If the code or data help you, please cite the following paper:
+
+@inproceedings{NRDelegationAttack,
+  title={QuoteR: NRDelegationAttack: Complexity DDoS attack on DNS Recursive Resolvers},
+  author={Qi, Yehuda Afek, Anat Bremler-Barr and Shani Stajnrod},
+  year={2023}
+}
   
 
 ## Docker Usage
