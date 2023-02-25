@@ -15,12 +15,15 @@ In this guide, we’ll learn the basic things needed in order to use “DNS-Full
 
 If the code or data help you, please cite the following paper:
 
+````
+
 @inproceedings{NRDelegationAttack,
   title={QuoteR: NRDelegationAttack: Complexity DDoS attack on DNS Recursive Resolvers},
   author={Qi, Yehuda Afek, Anat Bremler-Barr and Shani Stajnrod},
   year={2023}
 }
-  
+
+````
 
 ## Docker Usage
 
