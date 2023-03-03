@@ -87,10 +87,10 @@ Our authoritative servers are located at `/env/nsd_root` and `/env/nsd_attack`. 
 
 **Resolver:**
 
-First, go to the resolver implementation folder (We have both `Bind-9.16.6` (Which is non-vulnerable to NXNS).
-You can easily replace the `Bind9` version by going to `/env/bind9` and use `git checkout` for a different branch. (e.g. bind-9.16.2, Which is vulnerable to NXNS) 
+First, go to the resolver implementation folder (We have both `Bind-9.16.6` (Which is non-vulnerable to NXNSAttack) and bind-9.16.2 (Which is vulnerable to NXNSAttack)).
+You can easily replace the `Bind9` version by going to `/env/bind9` and use `git checkout` for a different branch. (e.g. bind-9.16.2, Which is vulnerable to NXNSAttack).
 
->**NOTE:** The environment is pre-installed with `Bind 9.16.6` so you can skip the next step if you don't want a different verion.
+>**NOTE:** The environment is pre-installed with `Bind 9.16.6` so you can skip the next step if you don't want a different version.
 
 Now, while inside Bind9 folder follow run the following commands:
 
