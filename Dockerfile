@@ -2,8 +2,7 @@ FROM  ubuntu:18.04
 
 # RUN apt-get -y install make
 # CMD ["apt-get" ,"hello world"]
-RUN apt-get update && apt-get install -y apt-utils make gcc pkg-config python3 python3-pip python-ply libuv1-dev libuv1 python3-pytest openssl libcap-dev libssl-dev libevent-dev flex bison software-properties-common dh-autoreconf libnghttp2-dev
-
+RUN apt-get update && apt-get install -y apt-utils make gcc pkg-config python3 python3-pip python-ply libuv1-dev libuv1 python3-pytest openssl libcap-dev libssl-dev libevent-dev flex bison software-properties-common dh-autoreconf libnghttp2-dev nano vim git
 
 # RUN curl https://bootstrap.pypa.io/get-pip.py | python
 
@@ -26,9 +25,9 @@ RUN make -j4
 RUN make install
 
 WORKDIR "/etc"
-RUN rndc-confgen -a
-RUN chmod 777 /usr/local/etc/rndc.key
-RUN chmod 777 /usr/local/etc/bind.keys
+#RUN rndc-confgen -a
+#RUN chmod 777 /usr/local/etc/rndc.key
+#RUN chmod 777 /usr/local/etc/bind.keys
 
 COPY nsd /env/nsd
 WORKDIR "/env/nsd"
