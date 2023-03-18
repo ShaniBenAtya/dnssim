@@ -46,6 +46,27 @@ If you are unfamiliar with Docker I suggest to first read about Docker here: [ht
 ## Getting to know the environment
 “DNS-FullProtocolSimulator”, like the DNS protocol, has three main parts: Client, Resolver (which is currently an implementation of bind9) and a chain of authoritative servers (currently including root server and TLD which are implemented with NSD).
 
+### Environment Structure Description 
+
+The following tree structure represent relevant folders and file in the environment with description for each one of them.
+
+├── nsd_root             - Root authoritative server configuration folder
+│   ├── lan.forward      - Zone file for SLD server ".lan"
+│   ├── lan.reverse
+│   ├── net.forward      - Zone file for root server ".net"
+│   ├── net.reverse
+│   ├── nsd.conf         - Configuration file for NSD, contains the IP address of the root server
+│   ├── nsd.db           - NSD DB, for internal NSD usage
+├── nsd_attack           - Malicious authoritative server configuration folder
+│   ├── home.lan.forward - Zone file for sld ".home.lan", this sld represents the malicious authoritative 
+│   ├── home.lan.reverse
+│   ├── nsd.conf         - Configuration file for NSD, contains the IP address of the malicious authoritative server
+│   ├── nsd.db           - NSD DB, for internal NSD usage
+├── named.conf           - Bind9 configuration, contains the IP address of the local environment
+├── bind9                - Bind9.16.6 source code with modification to use local root server
+├── nsd                  - NSD source code from https://github.com/NLnetLabs/nsd, this folder relevant in case of 
+                           changes to the original NSD code (In our experiment we didn't change this code)
+
 ### Resolver
 
 To use the DNS protocol in a closed testing environment, I changed Bind9 implementation and directed it to use my root as the default and only root server. This is done by changing the following the `root_ns[]` list in `rootns.c` file.
@@ -130,6 +151,17 @@ Starting the environment is done by:
         
 
 > **YAY! YOU ARE READY TO START TESTING!!!**
+
+### Basic Test
+To make sure that the setup is ready and well configured, the following steps are required:
+1. Open \href{https://www.wireshark.org/}{WireShark} and filter DNS requests. 
+    1.1 Follow these steps to use WireShark: 
+    First, run outside of the docker `docker exec -ti <container id> cat /sys/class/net/eth0/iflink`. 
+    Then, `ip link | grep <output from previous command>` and `<output from first command>: <name of the interface>` (This is the interface you should listen on),
+    Alternatively, the Netshoot tutorial (https://github.com/nicolaka/netshoot/) can be used.
+2. Query the resolver from within the docker `dig firewall.home.lan` and make sure that the correct IP address is received, you should see `Address: 127.0.0.207`
+
+NOTE: The address `firewall.home.lan` is configured in `/env/nsd_attack/home.lan.forward` and by performing the above test ensures that the resolver accesses the authoritative through the root server.
 
 ## Useful commands –
 
