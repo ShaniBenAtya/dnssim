@@ -50,6 +50,7 @@ If you are unfamiliar with Docker I suggest to first read about Docker here: [ht
 
 The following tree structure represent relevant folders and file in the environment with description for each one of them.
 
+```
 ├── nsd_root             - Root authoritative server configuration folder
 │   ├── lan.forward      - Zone file for SLD server ".lan"
 │   ├── lan.reverse
@@ -66,6 +67,7 @@ The following tree structure represent relevant folders and file in the environm
 ├── bind9                - Bind9.16.6 source code with modification to use local root server
 ├── nsd                  - NSD source code from https://github.com/NLnetLabs/nsd, this folder relevant in case of 
                            changes to the original NSD code (In our experiment we didn't change this code)
+```
 
 ### Resolver
 
