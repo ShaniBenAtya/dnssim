@@ -156,7 +156,7 @@ Starting the environment is done by:
 
 ### Basic Test
 To make sure that the setup is ready and well configured, the following steps are required:
-1. Open \href{https://www.wireshark.org/}{WireShark} and filter DNS requests. 
+1. Open WireShark and filter DNS requests. 
     1.1 Follow these steps to use WireShark: 
     First, run outside of the docker `docker exec -ti <container id> cat /sys/class/net/eth0/iflink`. 
     Then, `ip link | grep <output from previous command>` and `<output from first command>: <name of the interface>` (This is the interface you should listen on),
