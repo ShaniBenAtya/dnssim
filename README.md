@@ -101,7 +101,7 @@ Currently, we have two authoritative servers in the environment: root server and
     
 -   `127.0.0.2` – Root authoritative
     
--   `127.0.0.200` – “home.lan” TLD authoritative
+-   `127.0.0.200` – “home.lan” SLD authoritative
     
 -   `127.0.0.53` – The default resolver – **DO NOT USE IT WHILE TESTING**
     
