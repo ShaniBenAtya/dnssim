@@ -60,7 +60,7 @@ The following tree structure represent relevant folders and file in the environm
 │   ├── net.reverse
 │   ├── nsd.conf             - Configuration file for NSD, contains the IP address of the root server
 │   ├── nsd.db               - NSD DB, for internal NSD usage
-├── nsd_attack (127.0.0.200) - Malicious authoritative server configuration folder
+├── nsd_attack (127.0.0.200) - “home.lan” malicious authoritative server configuration folder
 │   ├── home.lan.forward     - Zone file for sld ".home.lan", this sld represents the malicious authoritative 
 │   ├── home.lan.reverse
 │   ├── nsd.conf             - Configuration file for NSD, contains the IP address of the malicious authoritative server
