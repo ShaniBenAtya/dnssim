@@ -6,3 +6,12 @@
 	path = nsd
 	url = git@github.com:ShaniBenAtya/nsd.git
 	tag = NSD_4_3_3_REL
+[submodule "bind9"]
+	path = bind9_16_2
+	url = git@github.com:ShaniBenAtya/bind9.git
+	tag = 9_16_2
+[submodule "bind9"]
+	path = bind9_16_33
+	url = git@github.com:ShaniBenAtya/bind9.git
+	tag = 9_16_33
+
