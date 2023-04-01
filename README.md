@@ -51,22 +51,24 @@ If you are unfamiliar with Docker I suggest to first read about Docker here: [ht
 The following tree structure represent relevant folders and file in the environment with description for each one of them.
 
 ```
-├── nsd_root             - Root authoritative server configuration folder
-│   ├── lan.forward      - Zone file for SLD server ".lan"
+├── client (127.0.0.1)             
+├── resolver (127.0.0.1)     
+├── nsd_root (127.0.0.2)     - Root authoritative server configuration folder
+│   ├── lan.forward          - Zone file for SLD server ".lan"
 │   ├── lan.reverse
-│   ├── net.forward      - Zone file for root server ".net"
+│   ├── net.forward          - Zone file for root server ".net"
 │   ├── net.reverse
-│   ├── nsd.conf         - Configuration file for NSD, contains the IP address of the root server
-│   ├── nsd.db           - NSD DB, for internal NSD usage
-├── nsd_attack           - Malicious authoritative server configuration folder
-│   ├── home.lan.forward - Zone file for sld ".home.lan", this sld represents the malicious authoritative 
+│   ├── nsd.conf             - Configuration file for NSD, contains the IP address of the root server
+│   ├── nsd.db               - NSD DB, for internal NSD usage
+├── nsd_attack (127.0.0.200) - “home.lan” malicious authoritative server configuration folder
+│   ├── home.lan.forward     - Zone file for sld ".home.lan", this sld represents the malicious authoritative 
 │   ├── home.lan.reverse
-│   ├── nsd.conf         - Configuration file for NSD, contains the IP address of the malicious authoritative server
-│   ├── nsd.db           - NSD DB, for internal NSD usage
-├── named.conf           - Bind9 configuration, contains the IP address of the local environment
-├── bind9                - Bind9.16.6 source code with modification to use local root server
-├── nsd                  - NSD source code from https://github.com/NLnetLabs/nsd, this folder relevant in case of 
-                           changes to the original NSD code (In our experiment we didn't change this code)
+│   ├── nsd.conf             - Configuration file for NSD, contains the IP address of the malicious authoritative server
+│   ├── nsd.db               - NSD DB, for internal NSD usage
+├── named.conf               - Bind9 configuration, contains the IP address of the local environment
+├── bind9                    - Bind9.16.6 source code with modification to use local root server
+├── nsd                      - NSD source code from https://github.com/NLnetLabs/nsd, this folder relevant in case of 
+                               changes to the original NSD code (In our experiment we didn't change this code)
 ```
 
 ### Resolver
@@ -99,7 +101,7 @@ Currently, we have two authoritative servers in the environment: root server and
     
 -   `127.0.0.2` – Root authoritative
     
--   `127.0.0.200` – “home.lan” TLD authoritative
+-   `127.0.0.200` – “home.lan” SLD authoritative
     
 -   `127.0.0.53` – The default resolver – **DO NOT USE IT WHILE TESTING**
     
@@ -156,7 +158,7 @@ Starting the environment is done by:
 
 ### Basic Test
 To make sure that the setup is ready and well configured, the following steps are required:
-1. Open \href{https://www.wireshark.org/}{WireShark} and filter DNS requests. 
+1. Open WireShark and filter DNS requests. 
     1.1 Follow these steps to use WireShark: 
     First, run outside of the docker `docker exec -ti <container id> cat /sys/class/net/eth0/iflink`. 
     Then, `ip link | grep <output from previous command>` and `<output from first command>: <name of the interface>` (This is the interface you should listen on),
