@@ -12,6 +12,8 @@ RUN pip3 install --upgrade setuptools
 
 COPY requirements.txt /tmp
 
+COPY reproduction /env/reproduction
+
 WORKDIR "/tmp"
 RUN pip3 install -r requirements.txt
 
@@ -19,10 +21,22 @@ RUN pip3 install -r requirements.txt
 COPY bind9 /env/bind9
 # # RUN 'wget https://github.com/ShaniBenAtya/bind9/archive/refs/heads/9_16_6.zip'
 WORKDIR "/env/bind9"
-#RUN autoreconf -fi
+RUN autoreconf -fi
 RUN ./configure
 RUN make -j4
 RUN make install
+
+COPY bind9_16_2 /env/bind9_16_2
+WORKDIR "/env/bind9_16_2"
+RUN autoreconf -fi
+RUN ./configure
+RUN make -j4
+
+COPY bind9_16_33 /env/bind9_16_33
+WORKDIR "/env/bind9_16_33"
+RUN autoreconf -fi
+RUN ./configure
+RUN make -j4
 
 WORKDIR "/etc"
 #RUN rndc-confgen -a
