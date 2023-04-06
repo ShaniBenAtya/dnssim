@@ -18,9 +18,9 @@ WORKDIR "/tmp"
 RUN pip3 install -r requirements.txt
 
 # WORKDIR "/env"
-COPY bind9 /env/bind9
+COPY bind9 /env/bind9_16_6
 # # RUN 'wget https://github.com/ShaniBenAtya/bind9/archive/refs/heads/9_16_6.zip'
-WORKDIR "/env/bind9"
+WORKDIR "/env/bind9_16_6"
 RUN autoreconf -fi
 RUN ./configure
 RUN make -j4
