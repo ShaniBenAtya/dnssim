@@ -73,7 +73,7 @@ The following tree structure represent relevant folders and file in the environm
 
 ### Resolver
 
-To use the DNS protocol in a closed testing environment, I changed Bind9 implementation and directed it to use my root as the default and only root server. This is done by changing the following the `root_ns[]` list in `rootns.c` file.
+To use the DNS protocol in a closed testing environment, I changed Bind9 implementation and directed it to use my ROOT as the default and only ROOT server. This is done by changing the `root_ns[]` list in `rootns.c` file.
 
 Also, in order to follow the code conveniently via debugging, code optimization was disabled in the compiler and the number of threads was limited. This was done by changing the `main.c` number of CPU’s as follows:
 
@@ -89,7 +89,7 @@ Was changed to:
 
 Our authoritative servers are implemented using NSD.
 
-Currently, we have two authoritative servers in the environment: root server and a TLD which zone is “home.lan”. In the next chapter, we’ll discuss how to configure them.
+Currently, we have two authoritative servers in the environment: ROOT server and a TLD which zone is “home.lan”. In the next chapter, we’ll discuss how to configure them.
 
 ## Configuration –
 
@@ -112,10 +112,9 @@ Our authoritative servers are located at `/env/nsd_root` and `/env/nsd_attack`. 
 
 **Resolver:**
 
-First, go to the resolver implementation folder (We have both `Bind-9.16.6` (Which is non-vulnerable to NXNSAttack) and bind-9.16.2 (Which is vulnerable to NXNSAttack)).
-You can easily replace the `Bind9` version by going to `/env/bind9` and use `git checkout` for a different branch. (e.g. bind-9.16.2, Which is vulnerable to NXNSAttack).
-
->**NOTE:** The environment is pre-installed with `Bind 9.16.6` so you can skip the next step if you don't want a different version.
+First, go to the resolver implementation folder (We have bind-9.16.2 (Which is vulnerable to NXNSAttack), Bind-9.16.6 (Which is non-vulnerable to NXNSAttack and vulnerable to NRDelegationAttack) and bind-9.16.33 (Which is non-vulnerable to both attacks)).
+ You can easily replace the Bind9 version by going to the correct Bind9 version folder (e.g., /env/bind9_16_6, /env/bind9_16_2 or /env/bind9_16_33) and run: `make install`.
+>**NOTE:** The environment is pre-installed with `Bind 9.16.6` which was the main Bind9 resolver version tested in NRDelegationAttack paper.
 
 Now, while inside Bind9 folder follow run the following commands:
 
@@ -158,14 +157,18 @@ Starting the environment is done by:
 
 ### Basic Test
 To make sure that the setup is ready and well configured, the following steps are required:
-1. Open WireShark and filter DNS requests. 
-    1.1 Follow these steps to use WireShark: 
-    First, run outside of the docker `docker exec -ti <container id> cat /sys/class/net/eth0/iflink`. 
-    Then, `ip link | grep <output from previous command>` and `<output from first command>: <name of the interface>` (This is the interface you should listen on),
-    Alternatively, the Netshoot tutorial (https://github.com/nicolaka/netshoot/) can be used.
-2. Query the resolver from within the docker `dig firewall.home.lan` and make sure that the correct IP address is received, you should see `Address: 127.0.0.207`
-
-NOTE: The address `firewall.home.lan` is configured in `/env/nsd_attack/home.lan.forward` and by performing the above test ensures that the resolver accesses the authoritative through the root server.
+1. Run another shell inside the docker container using `docker exec -ti <container id> bash` and run `tcpdump -i lo -s 65535 -w /app/dump`
+2. Query the resolver from within the docker container `dig firewall.home.lan` and make sure that the correct IP address is received, you should see `Address: 127.0.0.207`
+3. Stop `tcpdump` (you can use `^C`), Open WireShark, load the file `<local_folder_path>/dump` and filter DNS requests. You should observe the whole DNS resolution route for the domain name requested (`firewall.home.lan`).
+        3.1 `firewall.home.lan` query from client to resolver (ip `127.0.0.1` to ip `127.0.0.1`)
+        3.2 Resolver query to the root server (from `127.0.0.1` to `127.0.0.2`)
+        3.3 Root server return the SLD address (from `127.0.0.2` to `127.0.0.1`)
+        3.4 Resolver query the SLD (from `127.0.0.1` to `127.0.0.200`)
+        3.5 SLD return the address for the domain name (`127.0.0.207`)
+        3.6 Resolver return the address to the client (`127.0.0.207`)
+    \end{enumerate}
+        
+> **NOTE:** The address `firewall.home.lan` is configured in `/env/nsd_attack/home.lan.forward` and by performing the above test ensures that the resolver accesses the authoritative through the root server.
 
 ## Useful commands –
 
@@ -200,11 +203,11 @@ NOTE: The address `firewall.home.lan` is configured in `/env/nsd_attack/home.lan
     
     -   Send queries to the resolver in order to calculate the server maximum throughput and its latency
         
-        -   `resperf -d INPUT_FILE -s 127.0.0.1 -v`
+        -   `resperf -d INPUT_FILE -s 127.0.0.1 -v -R -P OUTPUT_NAME`
             
     -   In order to use resperf with constant range of queries per second:
         
-        -   `Resperf-report -d INPUT_FILE -s SERVER_IP -v -m 500 -c 60 -r 0`
+        -   `resperf -d INPUT_FILE -s 127.0.0.1 -v -m 15000 -c 60 -r 0 -R -P OUTPUT_NAME`
             
         -   Where: `-m` is the number of QPS that will be sent, `-c` is the time in which resperf will try to send the queries, and `-r` is the time resperf will have an ramp-up phase before sending the packets in a constant time, we’ll want the ramp-up to be zero.
             
@@ -216,7 +219,8 @@ NOTE: The address `firewall.home.lan` is configured in `/env/nsd_attack/home.lan
             
     -   After finishing the test, open the file in kcachegrind:
         
-        -   `kcachegrind OUTPUT_FILE`
+        -  First add permissions to open the file (`sudo chown USERNAME:USERNAME OUTFILE_NAME`) 
+        -  Open the file: (`kcachgrind ./OUTFILE_NAME`)
             
 -   psrecord: `psrecord <pid of bind9> --interval 1 --plot OUTPUT_FILE.png`
 	- > **NOTE:** to find Bind9 PID use `ps aux | grep named`
