@@ -161,12 +161,11 @@ To make sure that the setup is ready and well configured, the following steps ar
 2. Query the resolver from within the docker container `dig firewall.home.lan` and make sure that the correct IP address is received, you should see `Address: 127.0.0.207`
 3. Stop `tcpdump` (you can use `^C`), Open WireShark, load the file `<local_folder_path>/dump` and filter DNS requests. You should observe the whole DNS resolution route for the domain name requested (`firewall.home.lan`).
 * `firewall.home.lan` query from client to resolver (ip `127.0.0.1` to ip `127.0.0.1`)
-        3.2 Resolver query to the root server (from `127.0.0.1` to `127.0.0.2`)
-        3.3 Root server return the SLD address (from `127.0.0.2` to `127.0.0.1`)
-        3.4 Resolver query the SLD (from `127.0.0.1` to `127.0.0.200`)
-        3.5 SLD return the address for the domain name (`127.0.0.207`)
-        3.6 Resolver return the address to the client (`127.0.0.207`)
-    \end{enumerate}
+* Resolver query to the root server (from `127.0.0.1` to `127.0.0.2`)
+* Root server return the SLD address (from `127.0.0.2` to `127.0.0.1`)
+* Resolver query the SLD (from `127.0.0.1` to `127.0.0.200`)
+* SLD return the address for the domain name (`127.0.0.207`)
+* Resolver return the address to the client (`127.0.0.207`)
         
 > **NOTE:** The address `firewall.home.lan` is configured in `/env/nsd_attack/home.lan.forward` and by performing the above test ensures that the resolver accesses the authoritative through the root server.
 
