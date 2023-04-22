@@ -53,22 +53,22 @@ The following tree structure represent relevant folders and file in the environm
 ```
 ├── client (127.0.0.1)             
 ├── resolver (127.0.0.1)     
-├── nsd_root (127.0.0.2)     - Root authoritative server configuration folder
-│   ├── lan.forward          - Zone file for SLD server ".lan"
+├── nsd_root (127.0.0.2)    		  - ROOT authoritative server configuration folder
+│   ├── lan.forward         		  - Zone file for SLD server ".lan"
 │   ├── lan.reverse
-│   ├── net.forward          - Zone file for root server ".net"
+│   ├── net.forward         		  - Zone file for ROOT server ".net"
 │   ├── net.reverse
-│   ├── nsd.conf             - Configuration file for NSD, contains the IP address of the root server
-│   ├── nsd.db               - NSD DB, for internal NSD usage
-├── nsd_attack (127.0.0.200) - “home.lan” malicious authoritative server configuration folder
-│   ├── home.lan.forward     - Zone file for sld ".home.lan", this sld represents the malicious authoritative 
+│   ├── nsd.conf             		  - Configuration file for NSD, contains the IP address of the root server
+│   ├── nsd.db               		  - NSD DB, for internal NSD usage
+├── nsd_attack (127.0.0.200) 		  - “home.lan” malicious authoritative server configuration folder
+│   ├── home.lan.forward       		  - Zone file for SLD ".home.lan", this SLD represents the malicious authoritative 
 │   ├── home.lan.reverse
-│   ├── nsd.conf             - Configuration file for NSD, contains the IP address of the malicious authoritative server
-│   ├── nsd.db               - NSD DB, for internal NSD usage
-├── named.conf               - Bind9 configuration, contains the IP address of the local environment
-├── bind9                    - Bind9.16.6 source code with modification to use local root server
-├── nsd                      - NSD source code from https://github.com/NLnetLabs/nsd, this folder relevant in case of 
-                               changes to the original NSD code (In our experiment we didn't change this code)
+│   ├── nsd.conf             		  - Configuration file for NSD, contains the IP address of the malicious authoritative server
+│   ├── nsd.db               		  - NSD DB, for internal NSD usage
+├── named.conf               		  - Bind9 configuration, contains the IP address of the local environment
+├── bind9_16_6, bind9_16_2 OR bind9_16_33 - Bind source code with modification to use local ROOT server
+├── nsd                                   - NSD source code from https://github.com/NLnetLabs/nsd, this folder relevant in case of 
+                                            changes to the original NSD code (In our experiment we didn't change this code)
 ```
 
 ### Resolver
