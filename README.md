@@ -160,7 +160,7 @@ To make sure that the setup is ready and well configured, the following steps ar
 1. Run another shell inside the docker container using `docker exec -ti <container id> bash` and run `tcpdump -i lo -s 65535 -w /app/dump`
 2. Query the resolver from within the docker container `dig firewall.home.lan` and make sure that the correct IP address is received, you should see `Address: 127.0.0.207`
 3. Stop `tcpdump` (you can use `^C`), Open WireShark, load the file `<local_folder_path>/dump` and filter DNS requests. You should observe the whole DNS resolution route for the domain name requested (`firewall.home.lan`).
-        3.1 `firewall.home.lan` query from client to resolver (ip `127.0.0.1` to ip `127.0.0.1`)
+* `firewall.home.lan` query from client to resolver (ip `127.0.0.1` to ip `127.0.0.1`)
         3.2 Resolver query to the root server (from `127.0.0.1` to `127.0.0.2`)
         3.3 Root server return the SLD address (from `127.0.0.2` to `127.0.0.1`)
         3.4 Resolver query the SLD (from `127.0.0.1` to `127.0.0.200`)
